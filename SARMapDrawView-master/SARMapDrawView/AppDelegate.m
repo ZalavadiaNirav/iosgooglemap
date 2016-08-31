@@ -16,7 +16,6 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
     
 //    ** TODO: Place your API Key here and also the App Identifier to the one set in the Google Developer Console **
     [GMSServices provideAPIKey:@"AIzaSyBvfxaMAA9aKgP_Iu1IRgAjNlxGxXHfVlA"];

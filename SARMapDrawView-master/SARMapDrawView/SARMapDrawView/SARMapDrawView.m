@@ -30,7 +30,7 @@
 
 @implementation SARMapDrawView
 @synthesize mapView = mapView;
-@synthesize polygons = polygons;
+@synthesize polygons = polygons,removeDetailVw;
 
 -(instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -57,7 +57,6 @@
     
     if (!mapView)
         mapView = [GMSMapView mapWithFrame:self.bounds camera:camera];
-    
     mapView.camera = camera;
     mapView.delegate = self;
     mapView.mapType = kGMSTypeNormal;
@@ -70,6 +69,8 @@
     
     //to hide google icon use to do padding
     mapView.padding = UIEdgeInsetsMake(0.0,0.0,0.0, 500.0);
+    GMSUISettings * settings = mapView.settings;
+    [settings setConsumesGesturesInView:NO];
 //    mark=[[GMSMarker alloc] init];
     
 }
@@ -213,22 +214,41 @@
 - (void)mapView:(GMSMapView *)mapView didTapInfoWindowOfMarker:(GMSMarker *)marker
 {
     //Open detail view with animation
-    [UIView animateWithDuration:1.0 animations:^{
-        UIView *vw=[[UIView alloc] initWithFrame:CGRectMake(0, 540, 320, 320)];
-        
-        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:vw cache:NO];
-        [UIView beginAnimations:@"animate" context:nil];
-        vw.frame=CGRectMake(0, 318, 320, 250);
-
-        vw.backgroundColor=[UIColor blackColor];
-        [self.mapView addSubview:vw];
-        [self.mapView bringSubviewToFront:vw];
-    }];
+    NSLog(@"DID tap");
     
+    //Marker DetailView
+        [UIView animateWithDuration:1.0 animations:^{
+       _markerDetailVw=[[UIView alloc] initWithFrame:CGRectMake(0, 540, 320, 320)];
+        [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:_markerDetailVw cache:NO];
+        [UIView beginAnimations:@"animate" context:nil];
+        _markerDetailVw.frame=CGRectMake(0, 318, 320, 250);
+        _markerDetailVw.tag=100;
+        _markerDetailVw.backgroundColor=[UIColor blackColor];
+        [self.mapView addSubview:_markerDetailVw];
+            [UIView commitAnimations];
+        }];
+    
+    //To Dismiss Marker DetailView
+    
+        removeDetailVw = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [removeDetailVw setFrame:CGRectMake(0, 0, 320, 318)];
+        [removeDetailVw setBackgroundColor: [UIColor clearColor]];
+        [removeDetailVw addTarget:self action:@selector(removeMarkerDetailView:)
+        forControlEvents:UIControlEventTouchUpInside];
+        [self.mapView addSubview:removeDetailVw];
+   
+}
+
+-(void)removeMarkerDetailView:(id)sender
+{
+    [_markerDetailVw removeFromSuperview];
+    [removeDetailVw removeFromSuperview];
+
 }
 
 #pragma mark - Calculation Methods
--(void)resetPoints{
+-(void)resetPoints
+{
     lowestPoint = CGPointMake(0, 0);
     leftMostPoint = CGPointMake(2000, 2000);//Keeping it to the Max on the Right. 2000, since no iOS device crossed this (In Points)
     rightMostPoint = CGPointMake(0, 0);
@@ -290,19 +310,18 @@
 
 }
 
-- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay{
-    //    Mapping Sequences
+- (void)mapView:(GMSMapView *)mapView didTapOverlay:(GMSOverlay *)overlay
+{
     NSLog(@"DID tap overlay");
-    for (GMSPolygon *polygon in self.polygons){
-        if (polygon == overlay) {
+    for (GMSPolygon *polygon in self.polygons)
+    {
+        if (polygon == overlay)
+        {
             self.polygon = polygon;//Assigning the selected polygon here
-//            [self calculatePoints:YES];
-//            self.polygon.strokeColor = ShapeBlueColor;
-
-            if (self.MapViewDidTapOverlayBlock) {
+            if (self.MapViewDidTapOverlayBlock)
+            {
                 self.MapViewDidTapOverlayBlock(polygon);
             }
-            
             break;
         }
     }
@@ -312,11 +331,13 @@
 
 
 #pragma mark - UITouches Delegates
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    //    NSLog(@"touchesBegan");
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
     
-
+    NSLog(@"Touch began");
+//    [_markerDetailVw removeFromSuperview];
     [self resetPoints];
+    
     
     if (self.disableInteraction){
         self.disableInteraction = !self.disableInteraction;
@@ -338,8 +359,8 @@
     
 }
 
--(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-    //    NSLog(@"touchesMoved");
+-(void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
     if (!self.isDrawingPolygon) {
         return;
     }

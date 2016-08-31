@@ -12,6 +12,6 @@
 
 -(GMSPolyline*)addCoordinate:(CLLocationCoordinate2D)coordinate replaceLastObject:(BOOL)replaceLast inCoordinates:(NSMutableArray*)coordinates;
 -(void)drawPolyLineForPreviousCoordinates:(NSMutableArray*)coordinates;
--(BOOL)isClosingPolygonWithCoordinate:(CLLocationCoordinate2D)coordinate inCoordinates:(NSMutableArray*)coordinates;
+//-(BOOL)isClosingPolygonWithCoordinate:(CLLocationCoordinate2D)coordinate inCoordinates:(NSMutableArray*)coordinates;
 
 @end

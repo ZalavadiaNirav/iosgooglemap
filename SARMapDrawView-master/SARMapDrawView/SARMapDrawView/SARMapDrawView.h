@@ -41,6 +41,7 @@ typedef void (^ViewEnabled) ();//Used to enable user interaction and this block 
 
 @property (nonatomic, strong) NSArray *polygons;
 @property  (nonatomic,assign) CGRect mapframe;
+@property (nonatomic,strong)  UIButton *removeDetailVw;
 
 //Blocks
 @property (nonatomic, copy)polygonDrawn polygonDrawnBlock;
@@ -48,6 +49,10 @@ typedef void (^ViewEnabled) ();//Used to enable user interaction and this block 
 @property (nonatomic, copy)MapViewDidTapOverlay MapViewDidTapOverlayBlock;
 @property (nonatomic, copy)ViewEnabled ViewEnabledBlock;
 
+
+
+
+@property (nonatomic,retain) UIView *markerDetailVw;
 -(void)initialize;
 -(void)enableDrawing;
 -(void)disableDrawing;
